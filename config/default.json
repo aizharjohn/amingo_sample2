@@ -1,0 +1,23 @@
+{
+    "mongoURI": "mongodb+srv://aizhar:lastbreed1@cluster0-uqowg.mongodb.net/test?retryWrites=true&w=majority",
+    "DB": "Database Connected",
+    "jwtSecret": "mysecrettoken",
+    "validations": {
+        "fname": "First Name is required",
+        "lname": "Last Name is required",
+        "emailreq": "Email is required",
+        "emailvalid": "Please provide a valid email",
+        "passreq": "Password is required",
+        "passchar": "Password must contain 6 or more characters",
+        "regUser": "User Registered"
+    },
+    "status": {
+        "stat500": "Server Error"
+    },
+    "notoken": {
+        "msg": "No token, authorization denied"
+    },
+    "tokeninvalid": {
+        "msg": "Token is not valid"
+    }
+}
