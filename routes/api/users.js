@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const config = require('config');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UserModel = require('../../models/User');
 
@@ -18,7 +18,7 @@ const stat500 = config.get('status.stat500');
 const secretToken = config.get('jwtSecret');
 
 router.post(
-    '/',
+    '/register',
     [
         //Field Validation
         check('firstname', fname)
@@ -64,11 +64,20 @@ router.post(
 
             const theUser = new UserModel(formData);
 
-            //Password Hashing
-            const salt = await bcrypt.genSalt(10);
-            theUser.password = await bcrypt.hash(password, salt);
+            //Password Hashing (BCRYPT JS)
+            // const salt = await bcrypt.genSalt(10);
+            // theUser.password = await bcrypt.hash(password, salt);
 
-            await theUser.save();
+            //Password Hashing (BCRYPT)
+            bcrypt.genSalt((err, salt) => {
+                bcrypt.hash(formData.password, salt, (err, hashedPassword) => {
+                    theUser.password = hashedPassword;
+                    // await theUser.save();
+                    theUser.save();
+                });
+            });
+
+            res.send('User registered');
 
             //Return jsonwebtoken
             const payload = {
@@ -93,5 +102,28 @@ router.post(
         }
     }
 );
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        let user = await UserModel.findOne({ email });
+        if (user) {
+            res.status(400).json({
+                errors: [{ msg: 'User already exists' }]
+            });
+        }
+
+        const formData = {
+            email,
+            password
+        };
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send(stat500);
+    }
+
+    //const theUser = new UserModel(formData);
+});
 
 module.exports = router;
