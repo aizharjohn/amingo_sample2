@@ -64,18 +64,30 @@ router.post(
 
             const theUser = new UserModel(formData);
 
-            //Password Hashing (BCRYPT JS)
-            // const salt = await bcrypt.genSalt(10);
-            // theUser.password = await bcrypt.hash(password, salt);
-
             //Password Hashing (BCRYPT)
-            bcrypt.genSalt((err, salt) => {
-                bcrypt.hash(formData.password, salt, (err, hashedPassword) => {
-                    theUser.password = hashedPassword;
-                    // await theUser.save();
-                    theUser.save();
+            // bcrypt.genSalt((err, salt) => {
+            //     bcrypt.hash(formData.password, salt, (err, hashedPassword) => {
+            //         theUser.password = hashedPassword;
+            //         // await theUser.save();
+            //         theUser.save();
+            //     });
+            // });
+
+            //BCRYPT
+            const hashPassword = async () => {
+                await bcrypt.genSalt((err, salt) => {
+                    bcrypt.hash(
+                        formData.password,
+                        salt,
+                        (err, hashedPassword) => {
+                            theUser.password = hashedPassword;
+                            theUser.save();
+                        }
+                    );
                 });
-            });
+            };
+
+            hashPassword();
 
             res.send('User registered');
 
